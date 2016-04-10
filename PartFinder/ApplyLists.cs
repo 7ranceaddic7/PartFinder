@@ -332,7 +332,7 @@ namespace PartFinder
             // prune 
             foreach (string f in unpruned)
             {
-                var subpath = f.Substring(path.Length - 10);
+                var subpath = f.Substring(path.Length);
 
                 // check wheter the part is on the prune list
                 bool doPrune = false;
@@ -371,7 +371,7 @@ namespace PartFinder
             // unprune 
             foreach (string f in pruned)
             {
-                var subpath = f.Substring(path.Length - 10);
+                var subpath = f.Substring(path.Length);
 
                 // check wheter the part is on the unprune list
                 foreach (string prefix in unPruneList)

@@ -772,7 +772,7 @@ namespace PartFinder
                 {
                     // remove /gamedata/
                     var s = p;
-                    if (p.Contains("GameData"))
+                    if (p.StartsWith("\\GameData\\"))
                     {
                         s = p.Substring(10);
                     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -52,7 +53,7 @@ namespace PartFinder
                 StreamReader sr = new StreamReader(fs);
                 while (!sr.EndOfStream)
                 {
-                    list.Add("\\GameData\\" + sr.ReadLine().Replace('/', '\\'));
+                    list.Add(sr.ReadLine().Replace('/', '\\'));
                 }
             }
             catch (Exception ex)
@@ -68,5 +69,8 @@ namespace PartFinder
             }
             return list;
         }
+
+
+
     }
 }
