@@ -290,9 +290,9 @@ namespace PartFinder
         private List<PartEntry> ExtractParts(string path, bool pruned)
         {
             var entries = new List<PartEntry>();
-            int subPathStart = path.IndexOf("\\GameData\\") + 9;
+            int subPathStart = path.IndexOf("\\GameData\\") + 10;
             int subPathEnd = path.LastIndexOf("\\");
-            string subPath = path.Substring(subPathStart, subPathEnd - subPathStart) + "\\";
+            string subPath = path.Substring(subPathStart, subPathEnd - subPathStart + 1);
             string fileName = path.Substring(path.LastIndexOf("\\") + 1);
 
             // open the file
@@ -394,7 +394,7 @@ namespace PartFinder
                         current = new List<PartEntry>();
                         for (int i = 0; i < parentNames.Count; i++)
                         {
-                            var c = new PartEntry(subPath + "\\" + fileName, path);
+                            var c = new PartEntry(subPath + fileName, path);
                             c.Name = parentNames[i];
                             c.Parent = parentNames[i];
                             c.Pruned = pruned;
@@ -528,7 +528,7 @@ namespace PartFinder
                         // if relative path
                         if (!resPath.Contains("\\"))
                         {
-                            resPath = subPath + "\\" + resPath;
+                            resPath = subPath + resPath;
                         }
 
                         var resPathes = GetResourcePaths(resPath);
@@ -925,16 +925,23 @@ namespace PartFinder
                     fs.Close();
             }
 
-            // produce parts (weakest)
+            // non ro (weakest)
+            CreateFromList(namesNoRO, "non_ro");
+
+            // produce parts (strongest)
             CreateFromList(namesNoRP0, "non_rp0");
 
             // nocost 
-            //namesNoCost.AddRange(namesNoRP0);
             CreateFromList(namesNoCost, "rp0_nocost");
 
+
+            // nocost 
+            namesNoRP0.AddRange(namesNoRO);
+            CreateFromList(namesNoRP0, "non_ro_rp0");
+
             // non ro (strongest)
-            //namesNoRO.AddRange(namesNoCost);
-            CreateFromList(namesNoRO, "non_ro");
+            namesNoCost.AddRange(namesNoRP0);
+            CreateFromList(namesNoCost, "non_ro_rp0_nocost");
         }
 
         //private List<string> CreateTagPruneList(List<string> tags)
@@ -1018,7 +1025,12 @@ namespace PartFinder
         /// <returns>if it was possible to only put that file on the list</returns>
         private bool TryPrune(string name, List<string> pruneNames, List<string> prunePathList)
         {
-            List<PartEntry> parts;
+            //if (name.Contains("anard"))
+            //{
+            //    int j = 9;
+            //}
+
+            List <PartEntry> parts;
             if (!PartDict.TryGetValue(name, out parts))
             {
                 return false;
@@ -1069,7 +1081,7 @@ namespace PartFinder
                     else
                     {
                         // can be pruned
-                        Debug.WriteLine("prune path: " + pe.Name);
+                        //Debug.WriteLine("prune path: " + pe.Name);
                         if (pe.Path.Contains("RO_Pro"))
                         {
                             int j = 0;
