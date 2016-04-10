@@ -473,9 +473,9 @@ namespace PartFinder
                     #endregion
 
                     // ignore anything inside and outside parts
-                    if (indent != partIndent)
+                    if (indent < partIndent)
                     {
-                        if (wasPartBody && indent < partIndent)
+                        if (wasPartBody)
                         {
                             partIndent = -1;
                         }
@@ -507,6 +507,11 @@ namespace PartFinder
                                 c.Name = name;
                             }
                         }
+                    }
+
+                    if (l.StartsWith("model"))
+                    {
+                        int ijasdf = 0;
                     }
 
                     // model 
