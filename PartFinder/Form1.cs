@@ -422,7 +422,7 @@ namespace PartFinder
         /// update/init parts and fill lists with stuff
         /// </summary>
         /// <param name="pattern"></param>
-        private void SearchStuff()
+        public void SearchStuff()
         {
             if (textBoxSearch.Text == "")
             {
@@ -458,7 +458,7 @@ namespace PartFinder
                     // if mod/copy
                     if ((pe.IsMod && checkBoxNoMods.Checked)
                      || (pe.IsCopy && checkBoxNoCopies.Checked)
-                     || (pe.Name.Contains("*") && checkBoxNoWild.Checked))
+                     || (pe.Name != null && pe.Name.Contains("*") && checkBoxNoWild.Checked))
                     {
                         continue;
                     }

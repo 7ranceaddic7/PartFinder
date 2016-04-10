@@ -164,6 +164,7 @@ namespace PartFinder
                 }
             }
 
+            // post process
             foreach (PartEntry entry in PartEntries)
             {
                 bool pruned = entry.Pruned;
@@ -239,6 +240,7 @@ namespace PartFinder
                         Debug.Fail("must be in there");
                     }
                 }
+                // now we found the root
 
                 if (root != entry && root != null)
                 {
@@ -253,6 +255,9 @@ namespace PartFinder
                     {
                         root.TitleFamily = new List<string>();
                     }
+                    // share the list
+                    entry.TitleFamily = root.TitleFamily;
+
                     bool already = false;
                     foreach (string s in root.TitleFamily)
                     {
@@ -312,7 +317,7 @@ namespace PartFinder
                 int indent = 0;
                 do
                 {
-                    #region READLINE
+                    #region READLINE & INDENTION
                     // readline and indention
                     if (todo != null)
                     {
@@ -322,6 +327,17 @@ namespace PartFinder
                     else
                     {
                         l = sr.ReadLine();
+
+                        if (l.Contains("{}"))
+                        {
+                            int j = 0;
+                        }
+
+                        if (l.Contains("PART {"))
+                        {
+                            int j = 0;
+                        }
+
                         // remove comments
                         int commentStart = l.IndexOf("//");
                         if (commentStart != -1)
@@ -346,7 +362,7 @@ namespace PartFinder
                             else
                             {
                                 string left = l.Substring(0, brace);
-                                string right = l.Substring(left.Length);
+                                string right = l.Substring(brace);
                                 left = left.Trim();
 
                                 l = left;
@@ -358,10 +374,13 @@ namespace PartFinder
                     // TODO: remove
                     #endregion
 
+                    //Debug.WriteLine(indent + ": " + l);
+                    
                     #region PART DEFINITION
                     var trimmed = l.Trim();
-                    if (trimmed.Equals("PART")
-                        || (trimmed.Length > 4 && trimmed.Substring(1).StartsWith("PART[")))
+                    if (indent == 0
+                        && (trimmed.Equals("PART")
+                        || (trimmed.Length > 4 && trimmed.Substring(1).StartsWith("PART["))))
                     {
                         var parentNames = new List<string>(); ;
                         int oNameStart = l.IndexOf("[");
@@ -373,7 +392,12 @@ namespace PartFinder
                             {
                                 oNameEnd = l.Length;
                             }
-                            parentNames.AddRange(l.Substring(oNameStart, oNameEnd - oNameStart).Split(','));
+                            string names = l.Substring(oNameStart, oNameEnd - oNameStart);
+                            if (l.Contains("|"))
+                            {
+                                int j = 0;
+                            }
+                            parentNames.AddRange(names.Split(',', '|'));
                         }
                         else
                         {
@@ -541,7 +565,8 @@ namespace PartFinder
         private static string ParseLine(string l, string searchFor)
         {
             var lTrimmed = l.Trim().ToLower();
-            if (lTrimmed.StartsWith(searchFor + " =") || lTrimmed.StartsWith(searchFor + "="))
+            if (lTrimmed.StartsWith(searchFor + " =") || lTrimmed.StartsWith(searchFor + "=")
+                || lTrimmed.StartsWith("@" + searchFor + " =") || lTrimmed.StartsWith("@" + searchFor + "="))
             {
                 int tagStart = l.IndexOf('=') + 1;
                 if (tagStart != -1)
@@ -910,11 +935,11 @@ namespace PartFinder
             CreateFromList(namesNoRP0, "non_rp0");
 
             // nocost 
-            namesNoCost.AddRange(namesNoRP0);
+            //namesNoCost.AddRange(namesNoRP0);
             CreateFromList(namesNoCost, "rp0_nocost");
 
             // non ro (strongest)
-            namesNoRO.AddRange(namesNoCost);
+            //namesNoRO.AddRange(namesNoCost);
             CreateFromList(namesNoRO, "non_ro");
         }
 
@@ -946,6 +971,8 @@ namespace PartFinder
             var pathes = new List<string>();
             if (byTitle)
             {
+                int unpruned = 0;
+
                 PrintMessage("searching parts");
                 // search the path for every parts name
                 foreach (string name in pruneNames)
@@ -954,7 +981,15 @@ namespace PartFinder
                     // not the mod.
                     // and do nothing if the mod modifies an original part, which is
                     // used by some other non-pruned part
-                    TryPrune(name, pruneNames, pathes);
+                    if (!TryPrune(name, pruneNames, pathes))
+                    {
+                        Debug.WriteLine("Cannot prune part: " + name);
+                        unpruned++;
+                    }
+                }
+                if (unpruned > 0)
+                {
+                    PrintMessage("Can not prune " + unpruned + " parts.");
                 }
             }
             else
@@ -985,6 +1020,10 @@ namespace PartFinder
         /// <returns>if it was possible to only put that file on the list</returns>
         private bool TryPrune(string name, List<string> pruneNames, List<string> prunePathList)
         {
+            if (name.Contains("probeStackLarge"))
+            {
+                int j = 0;
+            }
             List<PartEntry> parts;
             if (!PartDict.TryGetValue(name, out parts))
             {
@@ -1015,7 +1054,7 @@ namespace PartFinder
                         continue;
                     }
                 }
-                else if (IsOnlyEntry(pe))
+                else if (IsOnlyEntry(pe, pruneNames))
                 {
                     if (pe.IsReplace)
                     {
@@ -1048,16 +1087,20 @@ namespace PartFinder
         }
 
         /// <summary>
-        /// Returns true if the given part is the only thing
-        /// specified in its file
+        /// Returns true if the given part is the only thing 
+        /// specified in its cfg file, any other thing (or its parent part) is
+        /// pruned
         /// </summary>
         /// <param name="pe"></param>
         /// <returns></returns>
-        private bool IsOnlyEntry(PartEntry pe)
+        private bool IsOnlyEntry(PartEntry pe, List<string> pruneNames)
         {
             foreach (PartEntry other in PartEntries)
             {
-                if (other.Path.Equals(pe.Path)
+                if (!other.Pruned
+                    && !((pe.IsMod && pruneNames.Contains(pe.Parent))
+                        || (!pe.IsMod && pruneNames.Contains(pe.Name)))
+                    && other.Path.Equals(pe.Path)
                     && pe != other)
                 {
                     return false;
@@ -1078,13 +1121,15 @@ namespace PartFinder
             foreach (PartEntry pe in PartEntries)
             {
                 // check if this is a child
-                if (!pe.Pruned && pe.Parent != null 
+                if (!pe.Pruned && pe.Parent != null
                     && pe.Parent.Equals(name) && !IsDeleted(pe.Name))
                 {
+                    // if it has the same name we do not have to to this
+                    if (!pe.Name.Equals(name)
                     // check whether the child is tagged  
-                    if (!(tags.Contains(pe.Name)
+                        && !(tags.Contains(pe.Name)
                         // or if its children as well
-                        || AllChildrenTagged(pe.Name, tags)))
+                        && AllChildrenTagged(pe.Name, tags)))
                     {
                         return false;
                     }

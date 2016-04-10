@@ -134,11 +134,11 @@ namespace PartFinder
 
             if (titles.Length > 0)
             {
-                return prefix + "[" + Name + "] " + Title + " { " + titles + " } :   " + Path;//.Substring(9);
+                return prefix + "[" + Name + "] " + Title + " { " + titles + " } @ " + Path;//.Substring(9);
             }
             else
             {
-                return prefix + "[" + Name + "] " + Title + " :   " + Path;//.Substring(9);
+                return prefix + "[" + Name + "] " + Title + " @ " + Path;//.Substring(9);
             }
         }
 

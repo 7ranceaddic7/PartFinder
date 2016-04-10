@@ -2,3 +2,4 @@
 /PartFinder/*.suo
 */bin/*
 */obj/*
+/.vs/*
