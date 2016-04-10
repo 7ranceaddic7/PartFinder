@@ -1,0 +1,4 @@
+/PartFinder/.vs/PartFinder/v14/*.suo
+/PartFinder/*.suo
+*/bin/*
+*/obj/*
