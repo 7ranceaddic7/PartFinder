@@ -131,7 +131,7 @@ namespace PartFinder
             {
                 ApplyList(list, new List<string>());
                 PrintMessage("Pruned selected list on the left");
-                _parent.SearchStuff();
+                _parent.StateChanged();
             }
             else
             {
@@ -189,7 +189,7 @@ namespace PartFinder
             {
                 ApplyList(new List<string>(), list);
                 PrintMessage("Unpruned selected list on the right");
-                _parent.SearchStuff();
+                _parent.StateChanged();
             }
             else
             {
@@ -217,7 +217,7 @@ namespace PartFinder
             }
             ApplyList(prune, new List<string>());
             PrintMessage("Pruned all lists on the left");
-            _parent.SearchStuff();
+            _parent.StateChanged();
         }
 
         // unprune all
@@ -241,7 +241,7 @@ namespace PartFinder
             }
             ApplyList(new List<string>(), unprune);
             PrintMessage("Unpruned all lists on the right");
-            _parent.SearchStuff();
+            _parent.StateChanged();
         }
 
         // global reset
@@ -251,7 +251,7 @@ namespace PartFinder
             ApplyList(new List<string>(), new List<string>() { "\\GameData\\" });
             PrintMessage("Done.");
 
-            _parent.SearchStuff();
+            _parent.StateChanged();
         }
 
         // global apply
@@ -291,7 +291,7 @@ namespace PartFinder
                 }
             }
             ApplyList(prune, unprune);
-            _parent.SearchStuff();
+            _parent.StateChanged();
             PrintMessage("Done.");
         }
 

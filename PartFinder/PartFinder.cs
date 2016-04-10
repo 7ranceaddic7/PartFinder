@@ -127,10 +127,6 @@ namespace PartFinder
             // get them parts from the files
             foreach (string f in files)
             {
-                if (f.EndsWith("RemoteTech_Tech_Node.cfg"))
-                {
-                    int j = 0;
-                }
                 var add = ExtractParts(f, false);
                 PartEntries.AddRange(add);
             }
@@ -237,7 +233,6 @@ namespace PartFinder
                     {
                         root = null;
                         break;
-                        Debug.Fail("must be in there");
                     }
                 }
                 // now we found the root
@@ -295,9 +290,9 @@ namespace PartFinder
         private List<PartEntry> ExtractParts(string path, bool pruned)
         {
             var entries = new List<PartEntry>();
-            int subPathStart = path.IndexOf("\\GameData\\") + 10;
+            int subPathStart = path.IndexOf("\\GameData\\") + 9;
             int subPathEnd = path.LastIndexOf("\\");
-            string subPath = path.Substring(subPathStart, subPathEnd - subPathStart);
+            string subPath = path.Substring(subPathStart, subPathEnd - subPathStart) + "\\";
             string fileName = path.Substring(path.LastIndexOf("\\") + 1);
 
             // open the file
@@ -313,7 +308,7 @@ namespace PartFinder
                 string l;
                 string todo = null;
                 int partIndent = -1; // the indent level of the current part
-                bool wasPartBody = false;
+                bool wasInPartBody = false;
                 int indent = 0;
                 do
                 {
@@ -327,18 +322,6 @@ namespace PartFinder
                     else
                     {
                         l = sr.ReadLine();
-
-                        if (l.Contains("{}"))
-                        {
-                            int j = 0;
-                        }
-
-                        if (l.Contains("PART {"))
-                        {
-                            int j = 0;
-                        }
-
-                        // remove comments
                         int commentStart = l.IndexOf("//");
                         if (commentStart != -1)
                         {
@@ -347,35 +330,43 @@ namespace PartFinder
                     }
 
                     // TODO: this is possibly never ever tested
-                    if (l.Contains('{') || l.Contains('}'))
+                    while (true)
                     {
-                        int brace = l.IndexOf('{');
-                        int braceR = l.IndexOf('}');
-                        brace = brace == -1 || (braceR != -1 && braceR < brace) ? braceR : brace;
-                        if (brace != -1)
+                        if (l.Contains('{') || l.Contains('}'))
                         {
-                            if (brace == 0)
+                            int brace = l.IndexOf('{');
+                            int braceR = l.IndexOf('}');
+                            brace = brace == -1 || (braceR != -1 && braceR < brace) ? braceR : brace;
+                            if (brace != -1)
                             {
-                                indent += l[0] == '{' ? 1 : -1;
-                                l = l.Substring(1);
-                            }
-                            else
-                            {
-                                string left = l.Substring(0, brace);
-                                string right = l.Substring(brace);
-                                left = left.Trim();
+                                if (brace == 0)
+                                {
+                                    indent += l[0] == '{' ? 1 : -1;
+                                    l = l.Substring(1);
+                                }
+                                else
+                                {
+                                    string left = l.Substring(0, brace);
+                                    string right = l.Substring(brace);
+                                    left = left.Trim();
 
-                                l = left;
-                                todo = right;
+                                    l = left;
+                                    todo = right;
+                                }
                             }
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
 
-                    // TODO: remove
+                    // shortcut
+                    if (l.Length == 0) continue;
                     #endregion
 
                     //Debug.WriteLine(indent + ": " + l);
-                    
+
                     #region PART DEFINITION
                     var trimmed = l.Trim();
                     if (indent == 0
@@ -393,10 +384,6 @@ namespace PartFinder
                                 oNameEnd = l.Length;
                             }
                             string names = l.Substring(oNameStart, oNameEnd - oNameStart);
-                            if (l.Contains("|"))
-                            {
-                                int j = 0;
-                            }
                             parentNames.AddRange(names.Split(',', '|'));
                         }
                         else
@@ -407,10 +394,6 @@ namespace PartFinder
                         current = new List<PartEntry>();
                         for (int i = 0; i < parentNames.Count; i++)
                         {
-                            if (parentNames[i] == null)
-                            {
-                                int j = 0;
-                            }
                             var c = new PartEntry(subPath + "\\" + fileName, path);
                             c.Name = parentNames[i];
                             c.Parent = parentNames[i];
@@ -420,7 +403,7 @@ namespace PartFinder
                         }
 
                         partIndent = indent + 1;
-                        wasPartBody = false;
+                        wasInPartBody = false;
 
                         if (l.Contains("!PART") || l.Contains("-PART"))
                         {
@@ -475,68 +458,70 @@ namespace PartFinder
                     // ignore anything inside and outside parts
                     if (indent < partIndent)
                     {
-                        if (wasPartBody)
+                        if (wasInPartBody)
                         {
                             partIndent = -1;
                         }
                         continue;
                     }
-                    wasPartBody = true;
+
+                    wasInPartBody = true;
                     //Debug.WriteLine(indent + ": " + l);
 
+
+
                     #region PARSE ENTRIES
-                    // title 
-                    {
-                        string title = ParseLine(l, "title");
-                        if (title != null)
-                        {
-                            foreach (var c in current)
-                            {
-                                c.Title = title;
-                            }
-                        }
-                    }
-
-                    // name 
-                    {
-                        string name = ParseLine(l, "name");
-                        if (name != null)
-                        {
-                            foreach (var c in current)
-                            {
-                                c.Name = name;
-                            }
-                        }
-                    }
-
-                    if (l.StartsWith("model"))
-                    {
-                        int ijasdf = 0;
-                    }
-
-                    // model 
                     string resPath = null;
+                    if (indent == partIndent)
                     {
-                        string model = ParseLine(l, "model");
-                        if (model != null)
+                        // title 
                         {
-                            resPath = model;
-                        }
-                    }
-
-                    // texture 
-                    {
-                        string texture = ParseLine(l, "texture");
-                        if (texture != null)
-                        {
-                            if (texture.Contains(","))
+                            string title = ParseLine(l, "title");
+                            if (title != null)
                             {
-                                texture = texture.Substring(texture.IndexOf(",") + 1).Trim();
+                                foreach (var c in current)
+                                {
+                                    c.Title = title;
+                                }
                             }
-                            resPath = texture;
+                        }
+
+                        // name 
+                        {
+                            string name = ParseLine(l, "name");
+                            if (name != null)
+                            {
+                                foreach (var c in current)
+                                {
+                                    c.Name = name;
+                                }
+                            }
                         }
                     }
+                    else if (indent == partIndent + 1)
+                    {
+                        // model 
+                        {
+                            string model = ParseLine(l, "model");
+                            if (model != null)
+                            {
+                                resPath = model;
+                            }
+                        }
 
+                        // texture 
+                        {
+                            string texture = ParseLine(l, "texture");
+                            if (texture != null)
+                            {
+                                if (texture.Contains(","))
+                                {
+                                    texture = texture.Substring(texture.IndexOf(",") + 1).Trim();
+                                }
+                                resPath = texture;
+                            }
+                        }
+                    }
                     if (resPath != null)
                     {
                         resPath = resPath.Replace("/", "\\");
@@ -547,6 +532,10 @@ namespace PartFinder
                         }
 
                         var resPathes = GetResourcePaths(resPath);
+                        foreach (var c in current)
+                        {
+                            c.Resources.Add(resPath);
+                        }
                     }
                     #endregion
 
@@ -982,6 +971,10 @@ namespace PartFinder
                 // search the path for every parts name
                 foreach (string name in pruneNames)
                 {
+                    if (name.Equals("proceduralTankOre"))
+                    {
+                        int j = 0;
+                    }
                     // delete the root, or the +copy, or the %repalcement and the original
                     // not the mod.
                     // and do nothing if the mod modifies an original part, which is
@@ -1025,12 +1018,14 @@ namespace PartFinder
         /// <returns>if it was possible to only put that file on the list</returns>
         private bool TryPrune(string name, List<string> pruneNames, List<string> prunePathList)
         {
-            if (name.Contains("probeStackLarge"))
-            {
-                int j = 0;
-            }
             List<PartEntry> parts;
             if (!PartDict.TryGetValue(name, out parts))
+            {
+                return false;
+            }
+            // only remove if there are no childs from
+            // this part or they are tagged as well
+            if (!AllChildrenTagged(name, pruneNames))
             {
                 return false;
             }
@@ -1040,12 +1035,7 @@ namespace PartFinder
                 {
                     continue;
                 }
-                // only remove if there are no childs from
-                // this part or they are tagged as well
-                if (!AllChildrenTagged(pe.Name, pruneNames))
-                {
-                    return false;
-                }
+
                 if (pe.IsMod)
                 {
                     if (pe.Parent != name)
@@ -1079,6 +1069,11 @@ namespace PartFinder
                     else
                     {
                         // can be pruned
+                        Debug.WriteLine("prune path: " + pe.Name);
+                        if (pe.Path.Contains("RO_Pro"))
+                        {
+                            int j = 0;
+                        }
                         prunePathList.Add(CreatePruneEntry(pe));
                         return true;
                     }
@@ -1103,12 +1098,16 @@ namespace PartFinder
             foreach (PartEntry other in PartEntries)
             {
                 if (!other.Pruned
-                    && !((pe.IsMod && pruneNames.Contains(pe.Parent))
-                        || (!pe.IsMod && pruneNames.Contains(pe.Name)))
-                    && other.Path.Equals(pe.Path)
-                    && pe != other)
+                    && pe != other
+                    && other.Path.Equals(pe.Path))
                 {
-                    return false;
+                    // allow, if all parts are pruned
+                    if (!((other.IsMod && pruneNames.Contains(other.Parent))
+                        || (!other.IsMod && pruneNames.Contains(other.Name))))
+                    {
+
+                        return false;
+                    }
                 }
             }
             return true;
@@ -1131,7 +1130,7 @@ namespace PartFinder
                 {
                     // if it has the same name we do not have to to this
                     if (!pe.Name.Equals(name)
-                    // check whether the child is tagged  
+                        // check whether the child is tagged  
                         && !(tags.Contains(pe.Name)
                         // or if its children as well
                         && AllChildrenTagged(pe.Name, tags)))

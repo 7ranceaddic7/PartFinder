@@ -290,10 +290,7 @@ namespace PartFinder
         // non rp0
         private void nonRP0ListsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_finder == null)
-            {
-                SearchStuff();
-            }
+            UpdateStuff();
             _finder.CreateRP0Lists();
         }
 
@@ -301,10 +298,7 @@ namespace PartFinder
         // create list for unpruning every texture
         private void resourceRepairListsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_finder == null)
-            {
-                SearchStuff();
-            }
+            UpdateStuff();
 
             _finder.CreateRepairLists();
         }
@@ -407,31 +401,13 @@ namespace PartFinder
         // ckeck changed
         private void checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            _finder.NeedsUpdate = true;
-
-            // reset
-            listBoxParts.Items.Clear();
-            listBoxPruned.Items.Clear();
+            StateChanged();
 
             SaveSettings();
         }
 
-
-
-        /// <summary>
-        /// update/init parts and fill lists with stuff
-        /// </summary>
-        /// <param name="pattern"></param>
-        public void SearchStuff()
+        private void UpdateStuff()
         {
-            if (textBoxSearch.Text == "")
-            {
-                _search = null;
-            }
-            else if (_search != null)
-            {
-                _search = _search.ToLower();
-            }
             if (_finder == null)
             {
                 _finder = new PartFinder(this, InstallPath, textBoxPrune.Text);
@@ -440,7 +416,25 @@ namespace PartFinder
             {
                 _finder.SearchStuff();
             }
+        }
 
+        /// <summary>
+        /// update/init parts and fill lists with stuff
+        /// </summary>
+        /// <param name="pattern"></param>
+        private void SearchStuff()
+        {
+            UpdateStuff();
+
+            if (textBoxSearch.Text == "")
+            {
+                _search = null;
+            }
+            else if (_search != null)
+            {
+                _search = _search.ToLower();
+            }
+           
             // reset
             listBoxParts.Items.Clear();
             listBoxPruned.Items.Clear();
@@ -458,7 +452,9 @@ namespace PartFinder
                     // if mod/copy
                     if ((pe.IsMod && checkBoxNoMods.Checked)
                      || (pe.IsCopy && checkBoxNoCopies.Checked)
-                     || (pe.Name != null && pe.Name.Contains("*") && checkBoxNoWild.Checked))
+                     || (pe.Name != null 
+                            && (pe.Name.Contains("*") || pe.Name.Contains("?"))
+                            && checkBoxNoWild.Checked))
                     {
                         continue;
                     }
@@ -637,6 +633,20 @@ namespace PartFinder
                 if (fs != null)
                     fs.Close();
             }
+        }
+
+        /// <summary>
+        /// Call this if files has ben manipulated
+        /// </summary>
+        public void StateChanged()
+        {
+            if (_finder != null)
+            {
+                _finder.NeedsUpdate = true;
+            }
+            // reset
+            listBoxParts.Items.Clear();
+            listBoxPruned.Items.Clear();
         }
 
         //private class OpenFile : ToolStripItem
