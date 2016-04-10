@@ -130,7 +130,7 @@
             this.textBoxPrune.Name = "textBoxPrune";
             this.textBoxPrune.Size = new System.Drawing.Size(40, 13);
             this.textBoxPrune.TabIndex = 1;
-            this.textBoxPrune.Text = "<path>";
+            this.textBoxPrune.Text = "";
             // 
             // openFileDialog1
             // 

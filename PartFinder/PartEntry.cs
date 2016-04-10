@@ -154,8 +154,8 @@ namespace PartFinder
                     }
                 }
             }
-            return Title.ToLower().Contains(pattern) 
-                || Name.ToLower().Contains(pattern);
+            return (Title != null && Title.ToLower().Contains(pattern)) 
+                || (Name != null && Name.ToLower().Contains(pattern));
         }
     }
 }

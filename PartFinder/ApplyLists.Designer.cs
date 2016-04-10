@@ -51,7 +51,7 @@
             this.listBoxPrunePath.FormattingEnabled = true;
             this.listBoxPrunePath.Location = new System.Drawing.Point(12, 37);
             this.listBoxPrunePath.Name = "listBoxPrunePath";
-            this.listBoxPrunePath.Size = new System.Drawing.Size(404, 199);
+            this.listBoxPrunePath.Size = new System.Drawing.Size(437, 199);
             this.listBoxPrunePath.TabIndex = 0;
             this.listBoxPrunePath.Click += new System.EventHandler(this.listBox_Changed);
             this.listBoxPrunePath.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBox_Changed);
@@ -59,9 +59,9 @@
             // listBoxUnPrunePath
             // 
             this.listBoxUnPrunePath.FormattingEnabled = true;
-            this.listBoxUnPrunePath.Location = new System.Drawing.Point(422, 37);
+            this.listBoxUnPrunePath.Location = new System.Drawing.Point(455, 37);
             this.listBoxUnPrunePath.Name = "listBoxUnPrunePath";
-            this.listBoxUnPrunePath.Size = new System.Drawing.Size(396, 199);
+            this.listBoxUnPrunePath.Size = new System.Drawing.Size(431, 199);
             this.listBoxUnPrunePath.TabIndex = 0;
             this.listBoxUnPrunePath.Click += new System.EventHandler(this.listBox_Changed);
             this.listBoxUnPrunePath.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBox_Changed);
@@ -78,7 +78,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(422, 242);
+            this.button2.Location = new System.Drawing.Point(455, 242);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 1;
@@ -98,7 +98,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(503, 242);
+            this.button4.Location = new System.Drawing.Point(536, 242);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 1;
@@ -118,21 +118,21 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(239, 324);
+            this.button6.Location = new System.Drawing.Point(271, 242);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.Size = new System.Drawing.Size(89, 23);
             this.button6.TabIndex = 1;
-            this.button6.Text = "Prune";
+            this.button6.Text = "Prune checked";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(320, 324);
+            this.button7.Location = new System.Drawing.Point(724, 242);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.Size = new System.Drawing.Size(109, 23);
             this.button7.TabIndex = 1;
-            this.button7.Text = "Unprune";
+            this.button7.Text = "Unprune checked";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
@@ -148,7 +148,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(419, 21);
+            this.label2.Location = new System.Drawing.Point(452, 21);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(51, 13);
             this.label2.TabIndex = 2;
@@ -156,21 +156,21 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(234, 242);
+            this.button8.Location = new System.Drawing.Point(174, 242);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(91, 23);
             this.button8.TabIndex = 1;
-            this.button8.Text = "Apply selected";
+            this.button8.Text = "Prune selected";
             this.button8.UseVisualStyleBackColor = true;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(683, 242);
+            this.button9.Location = new System.Drawing.Point(617, 242);
             this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(91, 23);
+            this.button9.Size = new System.Drawing.Size(101, 23);
             this.button9.TabIndex = 1;
-            this.button9.Text = "Apply selected";
+            this.button9.Text = "Unprune selected";
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
@@ -200,7 +200,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(830, 428);
+            this.ClientSize = new System.Drawing.Size(898, 466);
             this.Controls.Add(this.textBoxStatus);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);

@@ -34,8 +34,6 @@ namespace PartFinder
 
         private PartFinder _finder;
 
-        private bool _needsUpdate;
-
         private PartEntry _selectedPartEntry;
 
 
@@ -409,7 +407,7 @@ namespace PartFinder
         // ckeck changed
         private void checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            _needsUpdate = true;
+            _finder.NeedsUpdate = true;
 
             // reset
             listBoxParts.Items.Clear();
@@ -491,7 +489,6 @@ namespace PartFinder
                     }
                 }
             }
-            _needsUpdate = false;
             UpdateLabel();
         }
 
@@ -502,11 +499,7 @@ namespace PartFinder
                 return;
             }
 
-            if (_needsUpdate)
-            {
-                SearchStuff();
-            }
-
+         
             var changed = _finder.PruneFile(entry, prune);
 
             var removeFrom = prune ? listBoxParts : listBoxPruned;

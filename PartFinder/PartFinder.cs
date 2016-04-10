@@ -278,6 +278,8 @@ namespace PartFinder
             PartEntries = PartEntries.OrderBy((PartEntry x) => { return x.Name; }).ToList();
 
             PrintMessage("printing ...");
+
+            NeedsUpdate = false;
         }
 
         /// <summary>
@@ -538,8 +540,8 @@ namespace PartFinder
 
         private static string ParseLine(string l, string searchFor)
         {
-            l = l.Trim().ToLower();
-            if (l.StartsWith(searchFor + " =") || l.StartsWith(searchFor + "="))
+            var lTrimmed = l.Trim().ToLower();
+            if (lTrimmed.StartsWith(searchFor + " =") || lTrimmed.StartsWith(searchFor + "="))
             {
                 int tagStart = l.IndexOf('=') + 1;
                 if (tagStart != -1)
@@ -984,7 +986,10 @@ namespace PartFinder
         private bool TryPrune(string name, List<string> pruneNames, List<string> prunePathList)
         {
             List<PartEntry> parts;
-            PartDict.TryGetValue(name, out parts);
+            if (!PartDict.TryGetValue(name, out parts))
+            {
+                return false;
+            }
             foreach (PartEntry pe in parts)
             {
                 if (pe.Pruned)
@@ -1073,7 +1078,8 @@ namespace PartFinder
             foreach (PartEntry pe in PartEntries)
             {
                 // check if this is a child
-                if (!pe.Pruned && pe.Parent.Equals(name) && !IsDeleted(pe.Name))
+                if (!pe.Pruned && pe.Parent != null 
+                    && pe.Parent.Equals(name) && !IsDeleted(pe.Name))
                 {
                     // check whether the child is tagged  
                     if (!(tags.Contains(pe.Name)
