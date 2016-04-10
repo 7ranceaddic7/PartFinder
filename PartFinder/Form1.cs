@@ -567,7 +567,7 @@ namespace PartFinder
 
             if (changed.Count > 0)
             {
-                PrintMessage((prune ? "pruned " : "unpruned ") + changed + " parts");
+                PrintMessage((prune ? "pruned " : "unpruned ") + changed.Count + " parts");
             }
 
             // since we chaned something
